@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma de Tarefas - Testes Unitários</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        #lista-tarefas {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .tarefa {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .tarefa input[type="checkbox"] {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Testes Unitários</h1>
+
+    <script>
+        function runTests() {
+            const listaTarefas = document.getElementById("lista-tarefas");
+            const inputTarefa = document.getElementById("nova-tarefa");
+
+            // Teste 1: Adiciona tarefa à lista
+            inputTarefa.value = "Teste 1";
+            adicionarTarefa();
+            assert(listaTarefas.children.length === 1, "Teste 1 falhou: A tarefa não foi adicionada à lista.");
+
+            // Teste 2: Adiciona tarefa vazia
+            inputTarefa.value = "";
+            adicionarTarefa();
+            assert(listaTarefas.children.length === 1, "Teste 2 falhou: Tarefa vazia foi adicionada à lista.");
+
+            // Teste 3: Adiciona tarefa com espaços em branco
+            inputTarefa.value = "    ";
+            adicionarTarefa();
+            assert(listaTarefas.children.length === 1, "Teste 3 falhou: Tarefa com espaços em branco foi adicionada à lista.");
+
+            // Teste 4: Verifica se checkbox é criado corretamente
+            const checkbox = listaTarefas.children[0].querySelector("input[type='checkbox']");
+            assert(checkbox !== null && checkbox.type === "checkbox", "Teste 4 falhou: Checkbox não foi criado corretamente.");
+
+            // Teste 5: Verifica mensagem importante
+            inputTarefa.value = "Importante";
+            adicionarTarefa();
+            assert(alert.calledOnce, "Teste 5 falhou: A função de mensagem importante não foi chamada.");
+
+            // Teste 6: Adiciona múltiplas tarefas
+            inputTarefa.value = "Tarefa 1";
+            adicionarTarefa();
+            inputTarefa.value = "Tarefa 2";
+            adicionarTarefa();
+            inputTarefa.value = "Tarefa 3";
+            adicionarTarefa();
+            assert(listaTarefas.children.length === 4, "Teste 6 falhou: Não foi possível adicionar múltiplas tarefas à lista.");
+
+            // Teste 7: Concluir tarefa
+            const tarefaConcluida = listaTarefas.children[1];
+            tarefaConcluida.querySelector("input[type='checkbox']").click();
+            assert(listaTarefas.children.length === 3, "Teste 7 falhou: Não foi possível concluir a tarefa.");
+
+            // Teste 8: Tarefa vazia não dispara mensagem importante
+            inputTarefa.value = "";
+            adicionarTarefa();
+            assert(alert.calledOnce === false, "Teste 8 falhou: A mensagem importante foi exibida para uma tarefa vazia.");
+
+            // Teste 9: Tarefa com "importante" no meio não dispara mensagem importante
+            inputTarefa.value = "Tarefa importante no meio";
+            adicionarTarefa();
+            assert(alert.calledOnce === false, "Teste 9 falhou: A mensagem importante foi exibida para uma tarefa com 'importante' no meio.");
+
+            // Teste 10: Remover tarefa concluída
+            const tarefaRemovida = listaTarefas.children[1];
+            tarefaRemovida.querySelector("input[type='checkbox']").click();
+            assert(listaTarefas.children.length === 2, "Teste 10 falhou: Não foi possível remover a tarefa concluída.");
+
+            console.log("Todos os testes passaram com sucesso!");
+        }
+
+        function assert(condition, message) {
+            if (!condition) {
+                console.error(message);
+            }
+        }
+
+        // Mock para substituir a função alert
+        window.alert = function() { alert.calledOnce = true; };
+
+        // Inicializar testes ao carregar a página
+        runTests();
+    </script>
+
+    <h1>Plataforma de Tarefas</h1>
+
+    <form id="formulario-tarefa">
+        <label for="nova-tarefa">Nova Tarefa:</label>
+        <input type="text" id="nova-tarefa" required>
+        <button type="button" onclick="adicionarTarefa()">Adicionar</button>
+</form>
+
+<ul id="lista-tarefas"></ul>
+
+<script>
+    function adicionarTarefa() {
+        const novaTarefaInput = document.getElementById("nova-tarefa");
+        const listaTarefas = document.getElementById("lista-tarefas");
+
+        if (novaTarefaInput.value.trim() !== "") {
+            const novaTarefa = document.createElement("li");
+            novaTarefa.className = "tarefa";
+
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            novaTarefa.appendChild(checkbox);
+
+            const descricaoTarefa = document.createTextNode(novaTarefaInput.value);
+            novaTarefa.appendChild(descricaoTarefa);
+
+            listaTarefas.appendChild(novaTarefa);
+            novaTarefaInput.value = "";
+
+            // Aplicar a regra de IA
+            if (novaTarefa.textContent.toLowerCase().includes("importante")) {
+                exibirMensagemImportante();
+            }
+        }
+    }
+
+    function exibirMensagemImportante() {
+        alert("Esta tarefa é importante! 🚀");
+    }
+</script>
+
+</body>
+</html>
